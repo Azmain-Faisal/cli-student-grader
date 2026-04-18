@@ -225,6 +225,86 @@ void main() {
           print("-" * 40);
         }
         break;
+
+      // -------------------------------------------
+      // 8. View Report Card (Feature 8)
+      // -------------------------------------------
+      case '6':
+        //check if student list is empty
+        if (studentList.isEmpty) {
+          print("\n[!] No students available. Please add students first.");
+          break;
+        }
+        //student list display
+        print("\n--- VIEW REPORT CARD ---");
+        for (var i = 0; i < studentList.length; i++) {
+          print("${i + 1}. ${studentList[i]['name']}");
+        }
+        //student selection
+        stdout.write("\nSelect Student Serial Number: ");
+        var stuIdx =
+            (int.tryParse(stdin.readLineSync()?.trim() ?? "") ?? 0) - 1;
+
+        if (stuIdx < 0 || stuIdx >= studentList.length) {
+          print("\n[!]Error: Invalid student selection.");
+          break;
+        }
+
+        var selectedStudent = studentList[stuIdx];
+        var scores = selectedStudent['score'] as List<int>;
+        var bonus = selectedStudent['bonus'] as int? ?? 0;
+
+        //calculation part
+        double avrgScore = 0;
+        if (scores.isNotEmpty) {
+          //calculate average score
+          int total = 0;
+          for (var score in scores) {
+            total += score;
+          }
+          avrgScore = total / scores.length;
+        }
+
+        //adding bonus to average score
+        double finalScore = (avrgScore + (selectedStudent['bonus'] ?? 0)).clamp(
+          0,
+          100,
+        ); //used clamp to ensure final score is between 0 and 100
+
+        //grade calculation using if else ladder
+        String grade = finalScore >= 90
+            ? "A"
+            : finalScore >= 80
+            ? "B"
+            : finalScore >= 70
+            ? "C"
+            : finalScore >= 60
+            ? "D"
+            : "F";
+
+        // giving comment based on grade using switch case
+        String feedback = switch (grade) {
+          "A" => "Outstanding performance!",
+          "B" => "Good work, keep it up!",
+          "C" => "Satisfactory. Room to improve.",
+          "D" => "Needs improvement.",
+          "F" => "Failing. Please seek help.",
+          _ => "Unknown grade.",
+        };
+
+        //report card display
+        print('''
+╔══════════════════════════════════════╗
+║             REPORT CARD              ║
+╠══════════════════════════════════════╣
+║  Name:    ${selectedStudent['name'].padRight(31)}║
+║  Scores:  ${scores.join(", ").padRight(31)}║
+║  Bonus:   ${bonus.toString().padRight(31)}║
+║  Average: ${avrgScore.toStringAsFixed(2).padRight(31)}║
+║  Grade:   ${grade.padRight(31)}║
+║  Comment: ${feedback.padRight(31)}║
+╚══════════════════════════════════════╝''');
+        break;
     }
   } while (isRunning);
 }
