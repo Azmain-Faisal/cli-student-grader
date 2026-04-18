@@ -392,6 +392,15 @@ void main() {
         }
         print("=========================================");
         break;
+      // -------------------------------------------
+      // 10. Exit (Feature 10)
+      // -------------------------------------------
+      case '8':
+        print("\nExiting $appTitle. Goodbye!");
+        isRunning = false;
+        break;
+      default:
+        print("\n[!] Invalid option. Please choose a number between 1 and 8.");
     }
   } while (isRunning);
 }
