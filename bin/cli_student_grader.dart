@@ -305,6 +305,93 @@ void main() {
 ║  Comment: ${feedback.padRight(31)}║
 ╚══════════════════════════════════════╝''');
         break;
+
+      // -------------------------------------------
+      // 9. Class Summary (Feature 9)
+      // -------------------------------------------
+      case '7':
+        //check if student list is empty
+        if (studentList.isEmpty) {
+          print("\n[!] No students available. Please add students first.");
+          break;
+        }
+
+        //class summary display
+        print("\n============= CLASS SUMMARY =============");
+
+        // count passing students using logical operators
+        int passCount = 0;
+        double highestAvg = 0.0;
+        double lowestAvg = 100.0;
+        double totalClassScore = 0.0;
+        int studentsWithScores = 0;
+
+        //tracking unique grade using set
+        Set<String> uniqueGrades = {};
+        for (var student in studentList) {
+          var scores = student['score'] as List<int>;
+
+          if (scores.isNotEmpty) {
+            //calculate average score
+            int sum = 0;
+            for (var score in scores) sum += score;
+            double avgScore = sum / scores.length;
+            double finalAvg = (avgScore + (student['bonus'] ?? 0)).clamp(
+              0,
+              100,
+            );
+
+            //condition: have to be sore and pass(>=60)
+            if (finalAvg >= 60) {
+              passCount++;
+            }
+
+            //check for highest and lowest average
+            if (finalAvg > highestAvg) highestAvg = finalAvg;
+            if (finalAvg < lowestAvg) lowestAvg = finalAvg;
+
+            totalClassScore += finalAvg;
+            studentsWithScores++;
+
+            //grade calculation
+            String grade = finalAvg >= 90
+                ? "A"
+                : finalAvg >= 80
+                ? "B"
+                : finalAvg >= 70
+                ? "C"
+                : finalAvg >= 60
+                ? "D"
+                : "F";
+            uniqueGrades.add(grade);
+          }
+        }
+        //ready summary list using collection for
+        var summaryLines = [
+          for (var s in studentList)
+            "• ${s['name']}: ${((((s['score'] as List).isNotEmpty ? (s['score'] as List).reduce((a, b) => a + b) / (s['score'] as List).length : 0) + (s['bonus'] ?? 0)).clamp(0, 100)).toStringAsFixed(1)}",
+        ];
+        //showing all output
+        print("Total Students: ${studentList.length}");
+        print("Passing Students: $passCount");
+        if (studentsWithScores > 0) {
+          print(
+            "Class Average: ${(totalClassScore / studentsWithScores).toStringAsFixed(2)}",
+          );
+          print("Highest Average: ${highestAvg.toStringAsFixed(1)}");
+          print("Lowest Average: ${lowestAvg.toStringAsFixed(1)}");
+        } else {
+          print("No scores recorded yet.");
+        }
+        print(
+          "Grade Distribution: ${uniqueGrades.isEmpty ? "N/A" : uniqueGrades.join(", ")}",
+        );
+        print("\n--- Individual Student Averages ---");
+        for (var line in summaryLines) {
+          print(line);
+        }
+        print("=========================================");
+        break;
     }
   } while (isRunning);
 }
